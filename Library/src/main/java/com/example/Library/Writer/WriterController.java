@@ -1,9 +1,12 @@
 package com.example.Library.Writer;
 
+import com.example.Library.Book.Book;
 import com.example.Library.response.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,6 +33,16 @@ public class WriterController {
     public ResponseEntity<ApiResponse<Writer>> addBook(@RequestParam Long bookId,
                                                        @RequestParam Long writerId) {
         return ResponseEntity.ok(writerService.addBook(bookId, writerId));
+    }
+
+    @GetMapping("/book/list")
+    public ResponseEntity<ApiResponse<List<Book>>> getBookList(@RequestParam Long writerId) {
+        return ResponseEntity.ok(writerService.getBookList(writerId));
+    }
+
+    @GetMapping("/book/list")
+    public ResponseEntity<ApiResponse<List<Book>>> getBookList(@RequestParam Long writerId) {
+        return ResponseEntity.ok(writerService.getBookList(writerId));
     }
 
 }

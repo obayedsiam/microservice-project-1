@@ -5,8 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -22,8 +21,8 @@ public class BookDto {
 
     @Schema(description = "List of Writer IDs for the book",
             example = "[1, 2, 3]")
-    private List<Long> writerList;
+    private Set<Long> writerSet;
 
     @Schema(description = "List of genres for the book")
-    private List<Genre> genre;
+    private Set<Genre> genre;
 }

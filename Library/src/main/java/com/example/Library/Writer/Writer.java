@@ -2,12 +2,13 @@ package com.example.Library.Writer;
 
 import com.example.Library.Book.Book;
 import com.example.Library.Utils.BaseEntity;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -20,10 +21,17 @@ public class Writer extends BaseEntity {
 
     private String name;
 
-    @ManyToMany
-    @JsonIgnore
-    private List<Book> bookList;
+    @ManyToMany(mappedBy = "writers")
+    @JsonBackReference
+    private Set<Book> books = new HashSet<>();
 
+    public void addBook(Book book) {
+        books.add(book);
+    }
+
+    public void addBookSet(Set<Book> bookSet) {
+        books.addAll(bookSet);
+    }
 
 
 }

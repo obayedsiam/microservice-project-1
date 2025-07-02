@@ -4,12 +4,14 @@ import com.example.Library.Book.Book;
 import com.example.Library.Book.BookRepository;
 import com.example.Library.exception.CustomException;
 import com.example.Library.response.ApiResponse;
+import com.example.Library.response.PaginatedResponse;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 
 @Service
@@ -64,14 +66,27 @@ public class WriterService {
 
                 Book book = optionalBook.get();
 
-                List<Book> booklist = writer.getBookList();
+                Set<Book> bookSet = writer.getBooks();
 
-                booklist.add(book);
+                bookSet.add(book);
 
-                writer.setBookList(booklist);
+                writer.setBooks(bookSet);
 
                 return ApiResponse.success("Book added for writer", writer);
             } else throw new CustomException("Book not found with id " + bookId);
         } else throw new CustomException("Writer not found with id " + writerId);
+    }
+
+    public ApiResponse<List<Book>> getBookList(Long writerId){
+        Optional<Writer> optionalWriter = writerRepository.findById(writerId);
+        if(optionalWriter.isPresent()){
+            Writer writer = optionalWriter.get();
+            return ApiResponse.success("All book list of writer "+writer.getBooks());
+        }
+        throw new CustomException("Writer not found !");
+    }
+
+    public PaginatedResponse<Writer> getList(Integer size, Integer page, String sortBy, String sortDirection, String search) throws CustomException {
+        return null;
     }
 }

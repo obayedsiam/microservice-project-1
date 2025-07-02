@@ -7,11 +7,10 @@ import com.example.Library.response.ApiResponse;
 import com.example.Library.response.PaginatedResponse;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -24,25 +23,29 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public ApiResponse<Book> save(BookDto dto) {
+
         Book book = modelMapper.map(dto, Book.class);
 
+        Set<Writer> writers = new HashSet<>();
 
-        List<Writer> writerList;
-        writerList = getWriterList(dto.getWriterList());
-        book.setWriterList(writerList);
+        if(dto.getWriterSet()!=null){
+            writers = getWriterList(dto.getWriterSet());
+        }
+
+        book.addWriterSet(writers);
         book = bookRepository.save(book);
-        writerRepository.saveAll(writerList);
+        writerRepository.saveAll(writers);
 
         return ApiResponse.success("Book saved successfully", book);
     }
 
-    private List<Writer> getWriterList(List<Long> writerList) {
-        List<Writer> writerListResponse = new ArrayList<>();
-        for (Long writerId : writerList) {
+    private Set<Writer> getWriterList(Set<Long> writerSet) {
+        Set<Writer> writerSetResponse = new HashSet<>();
+        for (Long writerId : writerSet) {
          Optional<Writer> optionalWriter = writerRepository.findById(writerId);
-            optionalWriter.ifPresent(writerListResponse::add);
+            optionalWriter.ifPresent(writerSetResponse::add);
         }
-        return writerListResponse;
+        return writerSetResponse;
     }
 
     @Override
