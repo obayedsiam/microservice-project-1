@@ -2,6 +2,7 @@ package com.example.Library.Writer;
 
 import com.example.Library.Book.Book;
 import com.example.Library.response.ApiResponse;
+import com.example.Library.response.PaginatedResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,9 +41,14 @@ public class WriterController {
         return ResponseEntity.ok(writerService.getBookList(writerId));
     }
 
-    @GetMapping("/book/list")
-    public ResponseEntity<ApiResponse<List<Book>>> getBookList(@RequestParam Long writerId) {
-        return ResponseEntity.ok(writerService.getBookList(writerId));
+    @GetMapping("/list")
+    public ResponseEntity<PaginatedResponse<Writer>> getList(
+            @RequestParam(defaultValue = "10") Integer size,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDirection,
+            @RequestParam(required = false) String search
+    ) {
+        return ResponseEntity.ok(writerService.getList(size, page, sortBy, sortDirection, search));
     }
-
 }

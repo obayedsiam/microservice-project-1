@@ -7,10 +7,16 @@ import com.example.Library.response.ApiResponse;
 import com.example.Library.response.PaginatedResponse;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.lang.Nullable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +34,7 @@ public class BookServiceImpl implements BookService {
 
         Set<Writer> writers = new HashSet<>();
 
-        if(dto.getWriterSet()!=null){
+        if (dto.getWriterSet() != null) {
             writers = getWriterList(dto.getWriterSet());
         }
 
@@ -42,7 +48,7 @@ public class BookServiceImpl implements BookService {
     private Set<Writer> getWriterList(Set<Long> writerSet) {
         Set<Writer> writerSetResponse = new HashSet<>();
         for (Long writerId : writerSet) {
-         Optional<Writer> optionalWriter = writerRepository.findById(writerId);
+            Optional<Writer> optionalWriter = writerRepository.findById(writerId);
             optionalWriter.ifPresent(writerSetResponse::add);
         }
         return writerSetResponse;
@@ -76,6 +82,27 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public PaginatedResponse<Book> getList(Integer size, Integer page, String sortBy, String sortDirection, String search) throws CustomException {
-        return null;
+
+        Sort sort = sortDirection.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Page<Book> bookPage;
+
+//        if (search != null && !search.isEmpty()) {
+//            bookPage = bookRepository.findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(search, search, pageable);
+//        } else {
+//            bookPage = bookRepository.findAll(pageable);
+//        }
+
+        bookPage = bookRepository.findAll(pageable);
+
+        return new PaginatedResponse<>(
+                bookPage.getContent(),
+                bookPage.getNumber(),
+                bookPage.getSize(),
+                bookPage.getTotalElements(),
+                bookPage.getTotalPages(),
+                bookPage.isLast()
+        );
     }
 }

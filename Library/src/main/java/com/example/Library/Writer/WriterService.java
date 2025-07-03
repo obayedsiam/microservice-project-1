@@ -7,6 +7,10 @@ import com.example.Library.response.ApiResponse;
 import com.example.Library.response.PaginatedResponse;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -77,16 +81,37 @@ public class WriterService {
         } else throw new CustomException("Writer not found with id " + writerId);
     }
 
-    public ApiResponse<List<Book>> getBookList(Long writerId){
+    public ApiResponse<List<Book>> getBookList(Long writerId) {
         Optional<Writer> optionalWriter = writerRepository.findById(writerId);
-        if(optionalWriter.isPresent()){
+        if (optionalWriter.isPresent()) {
             Writer writer = optionalWriter.get();
-            return ApiResponse.success("All book list of writer "+writer.getBooks());
+            return ApiResponse.success("All book list of writer " + writer.getBooks());
         }
         throw new CustomException("Writer not found !");
     }
 
     public PaginatedResponse<Writer> getList(Integer size, Integer page, String sortBy, String sortDirection, String search) throws CustomException {
-        return null;
+
+        Sort sort = sortDirection.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<Writer> writerPage;
+
+//        if (search != null && !search.isEmpty()) {
+//            writerPage = writerRepository.findByBookNameContainingIgnoreCase(search, pageable);
+//        } else {
+//        writerPage = writerRepository.findAll(pageable);
+//        }
+
+        writerPage = writerRepository.findAll(pageable);
+
+        return new PaginatedResponse<>(
+                writerPage.getContent(),
+                writerPage.getNumber(),
+                writerPage.getSize(),
+                writerPage.getTotalElements(),
+                writerPage.getTotalPages(),
+                writerPage.isLast()
+        );
+
     }
 }
