@@ -41,6 +41,15 @@ public class WriterController {
         return ResponseEntity.ok(writerService.getBookList(writerId));
     }
 
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<ApiResponse<Writer>> delete(@PathVariable Long id) {
+        return ResponseEntity.ok(writerService.delete(id));
+    }
+
+
+
+
+
     @GetMapping("/list")
     public ResponseEntity<PaginatedResponse<Writer>> getList(
             @RequestParam(defaultValue = "10") Integer size,

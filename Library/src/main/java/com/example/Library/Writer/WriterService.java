@@ -7,6 +7,7 @@ import com.example.Library.response.ApiResponse;
 import com.example.Library.response.PaginatedResponse;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -35,21 +36,33 @@ public class WriterService {
     }
 
     public ApiResponse<Writer> update(WriterDto dto) {
-        Writer writer = new Writer();
-        if (dto.getId() != null) {
-            writer.setId(dto.getId());
-            Optional<Writer> optionalWriter = writerRepository.findById(dto.getId());
-            if (optionalWriter.isPresent()) {
-                if (optionalWriter.get().getName() != null) {
-                    writer.setName(optionalWriter.get().getName());
-                }
-                writer = writerRepository.save(writer);
-                return ApiResponse.success("Writer Created Successfully", writer);
-            }
 
+        if (dto.getId() == null) {
+            throw new IllegalArgumentException("ID is required for update");
         }
-        return ApiResponse.success("Writer info updated", writer);
+
+        Optional<Writer> optionalWriter = writerRepository.findById(dto.getId());
+
+        if (optionalWriter.isEmpty()) {
+            throw new RuntimeException("Writer not found with ID: " + dto.getId());
+        }
+
+        Writer existingWriter = optionalWriter.get();
+
+        // Update fields only if provided in DTO, otherwise keep existing
+        existingWriter.setName(dto.getName() != null ? dto.getName() : existingWriter.getName());
+
+        // Similarly, preserve recordStatus from BaseEntity if not provided in DTO (if DTO contains it)
+        if (dto.getRecordStatus() != null) {
+            existingWriter.setRecordStatus(dto.getRecordStatus());
+        }
+
+        // Save and return response
+        Writer updatedWriter = writerRepository.save(existingWriter);
+
+        return ApiResponse.success("Writer info updated", updatedWriter);
     }
+
 
     public ApiResponse<Writer> findById(Long id) {
         Optional<Writer> optionalWriter = writerRepository.findById(id);
@@ -90,19 +103,31 @@ public class WriterService {
         throw new CustomException("Writer not found !");
     }
 
+    public ApiResponse<Writer> delete(Long id) {
+        Writer writer = writerRepository.findById(id)
+                .orElseThrow(() -> new CustomException("Writer not found!"));
+
+        try {
+            writerRepository.delete(writer);
+        } catch (DataIntegrityViolationException e) {
+            throw new CustomException("Cannot delete writer due to related data.");
+        }
+
+        return ApiResponse.success("Author Deleted!");
+    }
+
+
     public PaginatedResponse<Writer> getList(Integer size, Integer page, String sortBy, String sortDirection, String search) throws CustomException {
 
         Sort sort = sortDirection.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
         Pageable pageable = PageRequest.of(page, size, sort);
         Page<Writer> writerPage;
 
-//        if (search != null && !search.isEmpty()) {
-//            writerPage = writerRepository.findByBookNameContainingIgnoreCase(search, pageable);
-//        } else {
-//        writerPage = writerRepository.findAll(pageable);
-//        }
-
+        if (search != null && !search.isEmpty()) {
+            writerPage = writerRepository.findByNameContainingIgnoreCase(search, pageable);
+        } else {
         writerPage = writerRepository.findAll(pageable);
+        }
 
         return new PaginatedResponse<>(
                 writerPage.getContent(),
