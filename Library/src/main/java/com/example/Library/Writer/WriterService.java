@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -126,7 +127,7 @@ public class WriterService {
         if (search != null && !search.isEmpty()) {
             writerPage = writerRepository.findByNameContainingIgnoreCase(search, pageable);
         } else {
-        writerPage = writerRepository.findAll(pageable);
+            writerPage = writerRepository.findAll(pageable);
         }
 
         return new PaginatedResponse<>(
@@ -137,6 +138,18 @@ public class WriterService {
                 writerPage.getTotalPages(),
                 writerPage.isLast()
         );
+
+    }
+
+    public List<Writer> getAll(String search) throws CustomException {
+        List<Writer> allWriterList;
+
+        if (search != null && !search.isEmpty()) {
+            allWriterList = writerRepository.findByNameContainingIgnoreCase(search);
+        } else {
+             allWriterList = writerRepository.findAll();
+        }
+        return allWriterList;
 
     }
 }
