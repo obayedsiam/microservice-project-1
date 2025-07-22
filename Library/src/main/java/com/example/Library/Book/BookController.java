@@ -45,14 +45,14 @@ public class BookController {
         return ResponseEntity.ok(bookService.findById(id));
     }
 
-    @GetMapping("/getAll")
+    @GetMapping("/all")
     @Operation(description = "Getting All Book")
     public ResponseEntity<ApiResponse<List<Book>>> getAll(@RequestParam(value = "sortBy", defaultValue = "") String sortBy,
                                                           @RequestParam(value = "search", defaultValue = "") String search) {
         return ResponseEntity.ok(bookService.getAll(search, sortBy));
     }
 
-    @GetMapping("/getList")
+    @GetMapping("/list")
     @Operation(description = "Getting Paginated Book")
     public PaginatedResponse<Book> getList(@RequestParam(value = "sortBy", defaultValue = "") String sortBy,
                                                  @RequestParam(value = "search", defaultValue = "") String search,

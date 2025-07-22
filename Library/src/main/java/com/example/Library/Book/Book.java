@@ -2,14 +2,12 @@ package com.example.Library.Book;
 
 import com.example.Library.Utils.BaseEntity;
 import com.example.Library.Writer.Writer;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Data
@@ -28,11 +26,11 @@ public class Book extends BaseEntity {
     @JsonManagedReference
     private Set<Writer> writers = new HashSet<>();
 
-    public void addWriter(Writer writer){
+    public void addWriter(Writer writer) {
         writers.add(writer);
     }
 
-    public void addWriterSet(Set<Writer> writerList){
+    public void addWriterSet(Set<Writer> writerList) {
         writers.addAll(writerList);
     }
 }
