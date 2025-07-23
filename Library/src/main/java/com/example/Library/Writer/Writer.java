@@ -21,17 +21,8 @@ public class Writer extends BaseEntity {
 
     private String name;
 
-    @ManyToMany(mappedBy = "writers")
+    @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonBackReference
     private Set<Book> books = new HashSet<>();
-
-    public void addBook(Book book) {
-        books.add(book);
-    }
-
-    public void addBookSet(Set<Book> bookSet) {
-        books.addAll(bookSet);
-    }
-
-
 }
+

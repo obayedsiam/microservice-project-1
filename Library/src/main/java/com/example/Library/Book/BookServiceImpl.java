@@ -1,5 +1,7 @@
 package com.example.Library.Book;
 
+import com.example.Library.Genre.Genre;
+import com.example.Library.Genre.GenreRepository;
 import com.example.Library.Writer.Writer;
 import com.example.Library.Writer.WriterRepository;
 import com.example.Library.exception.CustomException;
@@ -24,6 +26,7 @@ public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
     private final WriterRepository writerRepository;
+    private final GenreRepository genreRepository;
     private final ModelMapper modelMapper;
 
 
@@ -32,27 +35,24 @@ public class BookServiceImpl implements BookService {
 
         Book book = modelMapper.map(dto, Book.class);
 
-        Set<Writer> writers = new HashSet<>();
-
-        if (dto.getWriterSet() != null) {
-            writers = getWriterList(dto.getWriterSet());
+        Optional<Writer> writerOptional = writerRepository.findById(dto.getWriterId() != null ? dto.getWriterId() : 0L);
+        if(writerOptional.isPresent()){
+            Writer writer = writerOptional.get();
+            book.setWriter(writer);
         }
 
-        book.addWriterSet(writers);
+        Set<Genre> genreSet = new HashSet<>();
+        for(Long genreId : dto.getGenreIds()){
+            Optional<Genre> genreOptional = genreRepository.findById(genreId != null ? genreId : 0L);
+            genreOptional.ifPresent(genreSet::add);
+        }
+        book.setGenres(genreSet);
+
         book = bookRepository.save(book);
-        writerRepository.saveAll(writers);
 
         return ApiResponse.success("Book saved successfully", book);
     }
 
-    private Set<Writer> getWriterList(Set<Long> writerSet) {
-        Set<Writer> writerSetResponse = new HashSet<>();
-        for (Long writerId : writerSet) {
-            Optional<Writer> optionalWriter = writerRepository.findById(writerId);
-            optionalWriter.ifPresent(writerSetResponse::add);
-        }
-        return writerSetResponse;
-    }
 
     @Override
     public ApiResponse<Book> update(BookDto dto) {
