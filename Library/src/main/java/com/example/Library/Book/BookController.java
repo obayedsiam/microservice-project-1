@@ -47,7 +47,7 @@ public class BookController {
 
     @GetMapping("/all")
     @Operation(description = "Getting All Book")
-    public ResponseEntity<ApiResponse<List<Book>>> getAll(@RequestParam(value = "sortBy", defaultValue = "") String sortBy,
+    public ResponseEntity<List<Book>> getAll(@RequestParam(value = "sortBy", defaultValue = "") String sortBy,
                                                           @RequestParam(value = "search", defaultValue = "") String search) {
         return ResponseEntity.ok(bookService.getAll(search, sortBy));
     }

@@ -71,8 +71,8 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public ApiResponse<List<Book>> getAll(String search, String sortBy) {
-        return ApiResponse.success("", bookRepository.findAll());
+    public List<Book> getAll(String search, String sortBy) {
+        return bookRepository.findAll();
     }
 
     @Override

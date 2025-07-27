@@ -14,7 +14,7 @@ public interface BookService {
 
     void delete(Long userId);
 
-    ApiResponse<List<Book>> getAll(String search, String sortBy);
+    List<Book> getAll(String search, String sortBy);
 
     Book findById(Long userId);
 

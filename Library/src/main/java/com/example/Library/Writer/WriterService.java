@@ -84,11 +84,11 @@ public class WriterService {
 
                 Book book = optionalBook.get();
 
-                Set<Book> bookSet = writer.getBooks();
+                List<Book> bookList = writer.getBooks();
 
-                bookSet.add(book);
+                bookList.add(book);
 
-                writer.setBooks(bookSet);
+                writer.setBooks(bookList);
 
                 return ApiResponse.success("Book added for writer", writer);
             } else throw new CustomException("Book not found with id " + bookId);
