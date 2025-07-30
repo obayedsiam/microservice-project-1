@@ -13,6 +13,14 @@ public class PaginatedResponse<T> {
     private int totalPages;  // Total number of pages
     private boolean last;    // Is this the last page?
 
+    public PaginatedResponse(List<T> data){
+        this.data = data;
+        this.pageNumber = 0;
+        this.pageSize = data.size();
+        this.totalElements = data.size();
+        this.totalPages = 1;
+        this.last = true;
+    }
     // Constructor
     public PaginatedResponse(List<T> data, int pageNumber, int pageSize, long totalElements, int totalPages, boolean last) {
         this.data = data;

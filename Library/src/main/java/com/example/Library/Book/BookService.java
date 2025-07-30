@@ -14,11 +14,11 @@ public interface BookService {
 
     void delete(Long userId);
 
-    List<Book> getAll(String search, String sortBy);
+    PaginatedResponse<BookInfo> getAll(String search, String sortBy);
 
-    Book findById(Long userId);
+    BookInfo findById(Long userId);
 
-    PaginatedResponse<Book> getList(Integer size,
+    PaginatedResponse<BookInfo> getList(Integer size,
                                     Integer page,
                                     String sortBy,
                                     String sortDirection,

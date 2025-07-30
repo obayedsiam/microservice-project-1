@@ -2,6 +2,7 @@ package com.example.Library.Book;
 
 import com.example.Library.Genre.Genre;
 import com.example.Library.Genre.GenreRepository;
+import com.example.Library.Utils.RecordStatus;
 import com.example.Library.Writer.Writer;
 import com.example.Library.Writer.WriterRepository;
 import com.example.Library.exception.CustomException;
@@ -60,6 +61,7 @@ public class BookServiceImpl implements BookService {
         if (bookOptional.isPresent()) {
             ModelMapper mapper = new ModelMapper();
             Book book = mapper.map(dto, Book.class);
+            book.setRecordStatus(RecordStatus.ACTIVE);
             return ApiResponse.success("Book information updated", bookRepository.save(book));
         }
         throw new CustomException("Book not found !");
@@ -71,30 +73,29 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<Book> getAll(String search, String sortBy) {
-        return bookRepository.findAll();
+    public PaginatedResponse<BookInfo> getAll(String search, String sortBy) {
+        List<BookInfo> bookoInfoList = bookRepository.findAllBy();
+        return new PaginatedResponse<>(bookoInfoList);
     }
 
     @Override
-    public Book findById(Long userId) {
-        return null;
+    public BookInfo findById(Long bookId) {
+        return bookRepository.findBookById(bookId);
     }
 
     @Override
-    public PaginatedResponse<Book> getList(Integer size, Integer page, String sortBy, String sortDirection, String search) throws CustomException {
+    public PaginatedResponse<BookInfo> getList(Integer size, Integer page, String sortBy, String sortDirection, String search) throws CustomException {
 
         Sort sort = sortDirection.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        Page<Book> bookPage;
+        Page<BookInfo> bookPage;
 
-//        if (search != null && !search.isEmpty()) {
-//            bookPage = bookRepository.findByTitleContainingIgnoreCaseOrAuthorContainingIgnoreCase(search, search, pageable);
-//        } else {
-//            bookPage = bookRepository.findAll(pageable);
-//        }
-
-        bookPage = bookRepository.findAll(pageable);
+        if (search != null && !search.isEmpty()) {
+            bookPage = bookRepository.findByNameContainingIgnoreCaseOrWriter_NameContainingIgnoreCase(search, search, pageable);
+        } else {
+            bookPage = bookRepository.findAllBy(pageable);
+        }
 
         return new PaginatedResponse<>(
                 bookPage.getContent(),

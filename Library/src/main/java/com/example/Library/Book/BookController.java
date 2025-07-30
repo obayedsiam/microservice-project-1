@@ -41,20 +41,20 @@ public class BookController {
 
     @GetMapping("/find/{id}")
     @Operation(description = "Finding Book")
-    public ResponseEntity<Book> findById(@PathVariable Long id) {
+    public ResponseEntity<BookInfo> findById(@PathVariable Long id) {
         return ResponseEntity.ok(bookService.findById(id));
     }
 
     @GetMapping("/all")
     @Operation(description = "Getting All Book")
-    public ResponseEntity<List<Book>> getAll(@RequestParam(value = "sortBy", defaultValue = "") String sortBy,
+    public PaginatedResponse<BookInfo> getAll(@RequestParam(value = "sortBy", defaultValue = "") String sortBy,
                                                           @RequestParam(value = "search", defaultValue = "") String search) {
-        return ResponseEntity.ok(bookService.getAll(search, sortBy));
+        return bookService.getAll(search, sortBy);
     }
 
     @GetMapping("/list")
     @Operation(description = "Getting Paginated Book")
-    public PaginatedResponse<Book> getList(@RequestParam(value = "sortBy", defaultValue = "") String sortBy,
+    public PaginatedResponse<BookInfo> getList(@RequestParam(value = "sortBy", defaultValue = "") String sortBy,
                                                  @RequestParam(value = "search", defaultValue = "") String search,
                                                  @RequestParam(value = "page", defaultValue = "0") Integer page,
                                                  @RequestParam(value = "sortDirection", defaultValue = "") String sortDirection,
