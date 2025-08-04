@@ -4,13 +4,11 @@ import com.example.Library.exception.CustomException;
 import com.example.Library.response.ApiResponse;
 import com.example.Library.response.PaginatedResponse;
 
-import java.util.List;
-
 public interface BookService {
 
-    ApiResponse<Book> save(BookDto dto);
+    ApiResponse<BookDto> save(BookDto dto);
 
-    ApiResponse<Book> update(BookDto dto);
+    ApiResponse<BookDto> update(BookDto dto);
 
     void delete(Long userId);
 
@@ -19,9 +17,9 @@ public interface BookService {
     BookInfo findById(Long userId);
 
     PaginatedResponse<BookInfo> getList(Integer size,
-                                    Integer page,
-                                    String sortBy,
-                                    String sortDirection,
-                                    String search) throws CustomException;
+                                        Integer page,
+                                        String sortBy,
+                                        String sortDirection,
+                                        String search) throws CustomException;
 
 }

@@ -84,11 +84,11 @@ public class WriterService {
 
                 Book book = optionalBook.get();
 
-                List<Book> bookList = writer.getBooks();
+//                List<Book> bookList = writer.getBooks();
 
-                bookList.add(book);
+//                bookList.add(book);
 
-                writer.setBooks(bookList);
+//                writer.setBooks(bookList);
 
                 return ApiResponse.success("Book added for writer", writer);
             } else throw new CustomException("Book not found with id " + bookId);
@@ -97,10 +97,10 @@ public class WriterService {
 
     public ApiResponse<List<Book>> getBookList(Long writerId) {
         Optional<Writer> optionalWriter = writerRepository.findById(writerId);
-        if (optionalWriter.isPresent()) {
-            Writer writer = optionalWriter.get();
-            return ApiResponse.success("All book list of writer " + writer.getBooks());
-        }
+//        if (optionalWriter.isPresent()) {
+//            Writer writer = optionalWriter.get();
+//            return ApiResponse.success("All book list of writer " + writer.getBooks());
+//        }
         throw new CustomException("Writer not found !");
     }
 

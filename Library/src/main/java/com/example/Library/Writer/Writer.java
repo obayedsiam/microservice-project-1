@@ -2,45 +2,39 @@ package com.example.Library.Writer;
 
 import com.example.Library.Book.Book;
 import com.example.Library.Utils.BaseEntity;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-@EqualsAndHashCode(callSuper = true, exclude = "books") // Exclude relationship fields
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
-@Data
 public class Writer extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Use IDENTITY
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String name;
 
-//    @OneToMany(mappedBy = "writer", cascade = CascadeType.ALL, orphanRemoval = true)
-//    @JsonIgnoreProperties("writer") // Ignore "writer" in Book to break recursion
-//    private Set<Book> books = new HashSet<>();
-
+    @OneToMany(mappedBy = "writer", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @ToString.Exclude
     @JsonManagedReference
-    @OneToMany(mappedBy = "writer")
     private List<Book> books = new ArrayList<>();
 
-    // Helper method to add a book and maintain bidirectional relationship
+    // Helper methods
     public void addBook(Book book) {
-        this.books.add(book);
-        book.setWriter(this); // Set the writer for the book
+        books.add(book);
+        book.setWriter(this);
     }
 
-    // Helper method to remove a book and maintain bidirectional relationship
     public void removeBook(Book book) {
-        this.books.remove(book);
-        book.setWriter(null); // Remove the writer from the book
+        books.remove(book);
+        book.setWriter(null);
     }
 }

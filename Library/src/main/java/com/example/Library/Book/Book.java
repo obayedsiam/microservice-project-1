@@ -5,38 +5,52 @@ import com.example.Library.Utils.BaseEntity;
 import com.example.Library.Writer.Writer;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 @Entity
-@EqualsAndHashCode(callSuper = true, exclude = {"writer", "genres"}) // Exclude relationship fields
 public class Book extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Use IDENTITY for auto-incrementing IDs
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
+    private Double rating;
+    private Boolean isRead;
+    private Integer readingPercentage;
+    private String giftedBy;
+    private LocalDate buyingDate;
+    private String buyingLocation;
+    private String currentBookLocation;
+    private Boolean borrowed;
+    private String borrowerName;
+    private String borrowerPhone;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "writer_id")
+    @ToString.Exclude
     @JsonBackReference
-    @ManyToOne(fetch = FetchType.LAZY) // Lazy fetch for ManyToOne to avoid N+1 issues
     private Writer writer;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}) // Cascade for persist and merge
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinTable(
             name = "book_genre",
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
-    @JsonIgnoreProperties("books") // Ignore "books" in Genre to break recursion
+    @ToString.Exclude
+    @JsonIgnoreProperties("books")
     private Set<Genre> genres = new HashSet<>();
 
-    // Helper methods to manage bidirectional relationships
+    // Helper methods
     public void addGenre(Genre genre) {
         this.genres.add(genre);
         genre.getBooks().add(this);
@@ -45,17 +59,5 @@ public class Book extends BaseEntity {
     public void removeGenre(Genre genre) {
         this.genres.remove(genre);
         genre.getBooks().remove(this);
-    }
-
-    public void setWriter(Writer writer) {
-        // Remove from old writer's books if exists
-        if (this.writer != null) {
-            this.writer.getBooks().remove(this);
-        }
-        this.writer = writer;
-        // Add to new writer's books
-        if (writer != null) {
-            writer.getBooks().add(this);
-        }
     }
 }

@@ -22,13 +22,13 @@ public class BookController {
 
     @PostMapping("/save")
     @Operation(description = "Adding Book")
-    public ResponseEntity<ApiResponse<Book>> save(@RequestBody BookDto dto) {
+    public ResponseEntity<ApiResponse<BookDto>> save(@RequestBody BookDto dto) {
         return ResponseEntity.ok(bookService.save(dto));
     }
 
     @PutMapping("/update")
     @Operation(description = "Updating Book")
-    public ResponseEntity<ApiResponse<Book>> update(@RequestBody BookDto dto) {
+    public ResponseEntity<ApiResponse<BookDto>> update(@RequestBody BookDto dto) {
         return ResponseEntity.ok(bookService.update(dto));
     }
 
